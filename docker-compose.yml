@@ -1,0 +1,61 @@
+version: '3'
+services:
+  backend_api:
+    build:
+      context: ./backend/api
+      dockerfile: Dockerfile  
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend/api/src:/app/src
+    environment:
+      OPEN_API_KEY: ${OPEN_API_KEY}
+      STABLEHORDE_API_KEY: ${STABLEHORDE_API_KEY}
+      STABLEHORDE_URL: ${STABLEHORDE_URL}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    networks:
+      - app_network
+
+  autocook_frontend:
+    image: node:22
+    container_name: nextjs-container
+    working_dir: /app/frontend/autocook
+    volumes:
+      - ./frontend/autocook:/app/frontend/autocook
+    ports:
+      - "3000:3000"
+    command: >
+      sh -c "
+        npm install &&
+        npx prisma migrate deploy && 
+        npm run dev
+      "
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?connect_timeout=300&schema=public&connection_limit=300
+      API_URL: http://backend_api:8080
+    networks:
+      - app_network
+
+  db:
+    image: postgres:17
+    container_name: db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+
+volumes:
+  db_data:
+
+networks:
+  app_network:
+    driver: bridge

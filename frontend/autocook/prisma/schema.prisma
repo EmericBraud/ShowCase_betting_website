@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                 String    @id @default(cuid())
+  userId             String
+  providerType       String
+  providerId         String
+  providerAccountId  String
+  refreshToken       String?
+  accessToken        String?
+  accessTokenExpires DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  user               User      @relation(fields: [userId], references: [id])
+
+  @@unique([providerId, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  expires      DateTime
+  sessionToken String   @unique
+  accessToken  String   @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id])
+}
+
+model User {
+  id            String          @id @default(cuid())
+  name          String?
+  email         String?         @unique
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  password      String?
+  preferencesId Int?
+  accounts      Account[]
+  recipes       Recipe[]
+  sessions      Session[]
+  preferences   UserPreference?
+}
+
+model UserPreference {
+  id                Int       @id @default(autoincrement())
+  diet              String    @default("")
+  selectedMealsList Boolean[] @default([true, true, true, true, true, true, true, true, true, true, true, true, true, true])
+  userId            String    @unique
+  user              User      @relation(fields: [userId], references: [id])
+}
+
+model VerificationRequest {
+  id         String   @id @default(cuid())
+  identifier String
+  token      String   @unique
+  expires    DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([identifier, token])
+}
+
+model Recipe {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  steps       String[]
+  ingredients String[]
+  createdAt   DateTime @default(now()) @db.Timestamptz(6)
+  date        DateTime @db.Date
+  status      Boolean  @default(false)
+  user        User     @relation(fields: [userId], references: [id])
+}
