@@ -1,7 +1,7 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "AutoCook",
+  name: "Shinny Wild",
   description: "Guide ultime de la cuisine, plus besoin de réfléchir à des idées de recette !",
   navItems: [
     {

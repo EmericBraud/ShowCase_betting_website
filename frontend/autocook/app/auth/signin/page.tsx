@@ -22,7 +22,7 @@ export default function Signin() {
     <Card>
       <CardHeader>
         <h4 className="centeredText">
-          Log in
+          Sign in
         </h4>
       </CardHeader>
       <CardBody>
@@ -48,7 +48,7 @@ export default function Signin() {
       <CardFooter>
           <pre>No account ? </pre>
           <Link href="./signup">
-            Sign in !
+            Sign up !
           </Link>        
       </CardFooter>
       
