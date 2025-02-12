@@ -78,32 +78,70 @@ h3{
 
 .maingrid{
   display: grid;
-  grid-template-columns: 1fr 5fr;
+  grid-template-columns: 1fr 4fr;
   gap: 20px;
   height: 100%;
 }
 
 .gridSidebar{
-  padding: 10px;
   border-radius: 10px;
-  height: 100%;
+  height: fit-content;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
-.gridSidebar {
-  padding: 10px;
-  border-radius: 10px;
-  height: 100%;
+:root{
+  --dark-bg: rgb(20, 20, 20);
+  --light-bg: rgb(243, 243, 243);
+  --dark-hover: rgb(60,60,60);
+  --light-hover: rgb(206, 206, 206);
+}
+
+
+[data-theme="light"] .gridSidebar {
+  background-color: var(--light-bg);
 }
 
 [data-theme="dark"] .gridSidebar {
-  background-color: rgb(20, 20, 20);
+  background-color: var(--dark-bg);
 }
 
-[data-theme="light"] .gridSidebar {
-  background-color: rgb(243, 243, 243);
+.gridSidebarItem{
+  text-align: center;
+  padding: 10px;
+  cursor: pointer;
+  transition: 0.5s ease-in-out;
 }
+[data-theme="dark"] .gridSidebarItem:hover{
+  background-color: var(--dark-hover);
+}
+
+[data-theme="light"] .gridSidebarItem:hover{
+  background-color: var(--light-hover);
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-gradient {
+  background: linear-gradient(45deg, #8a2be2, #ff1493, #ff4500, #8a2be2);
+  background-size: 300% 300%;
+  animation: gradientMove 6s linear infinite;
+}
+
 .gridContent{
+  overflow: hidden;
+  border-radius: 10px;
+  padding: 10px;
+}
 
+[data-theme="dark"] .gridContent{
+  background-color: var(--dark-bg);
+}
+
+[data-theme="light"] .gridContent{
+  background-color: var(--light-bg);
 }
