@@ -107,10 +107,16 @@ h3{
 }
 
 .gridSidebarItem{
-  text-align: center;
   padding: 10px;
   cursor: pointer;
-  transition: 0.5s ease-in-out;
+  transition: 0.3s ease-in-out;
+  border-radius: 10px;
+}
+[data-theme="dark"] .selected{
+  background-color: var(--dark-hover);
+}
+[data-theme="light"] .selected{
+  background-color: var(--light-hover);
 }
 [data-theme="dark"] .gridSidebarItem:hover{
   background-color: var(--dark-hover);
@@ -121,9 +127,15 @@ h3{
 }
 
 @keyframes gradientMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+  }
 }
 
 .animate-gradient {

@@ -44,17 +44,8 @@ model User {
   password      String?
   preferencesId Int?
   accounts      Account[]
-  recipes       Recipe[]
   sessions      Session[]
-  preferences   UserPreference?
-}
-
-model UserPreference {
-  id                Int       @id @default(autoincrement())
-  diet              String    @default("")
-  selectedMealsList Boolean[] @default([true, true, true, true, true, true, true, true, true, true, true, true, true, true])
-  userId            String    @unique
-  user              User      @relation(fields: [userId], references: [id])
+  hunts         Hunt[]
 }
 
 model VerificationRequest {
@@ -67,15 +58,51 @@ model VerificationRequest {
 
   @@unique([identifier, token])
 }
-
-model Recipe {
-  id          String   @id @default(cuid())
-  userId      String
-  title       String
-  steps       String[]
-  ingredients String[]
-  createdAt   DateTime @default(now()) @db.Timestamptz(6)
-  date        DateTime @db.Date
-  status      Boolean  @default(false)
-  user        User     @relation(fields: [userId], references: [id])
+//Custom tables
+model Casino {
+  id            String           @id @default(cuid())
+  name          String           @unique
+  createdAt     DateTime         @default(now())
+  games         Game[]
 }
+
+model Game {
+  id            String           @id @default(cuid())
+  name          String
+  casinoId      String
+  imageId       String           @unique
+  createdAt     DateTime         @default(now())
+  casino        Casino           @relation(fields: [casinoId], references: [id])
+  image         Image            @relation(fields: [imageId], references: [id])
+  bonuses       Bonus[]
+}
+
+model Image {
+  id            String          @id @default(cuid())
+  data          Bytes
+  createdAt     DateTime        @default(now())
+  game          Game?
+}
+
+model Hunt {
+  id            String          @id @default(cuid())
+  startingBet   Float           @default(0)
+  gains         Float           @default(0)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  userId        String
+  user          User            @relation(fields: [userId], references: [id])
+  bonuses       Bonus[]
+}
+
+model Bonus {
+  id            String          @id @default(cuid())
+  opened        Boolean         @default(false)
+  startingBet   Float           @default(0)
+  gain          Float           @default(0)
+  gameId        String
+  huntId        String
+  game          Game            @relation(fields: [gameId], references: [id])
+  hunt          Hunt            @relation(fields: [huntId], references: [id])
+}
+

@@ -8,8 +8,35 @@ import { baseStyles, Divider } from "@nextui-org/react";
 import { Switch } from "@nextui-org/switch";
 import {Progress } from "@nextui-org/progress"
 
-export const SideBarBoard = ({ buttonText }) => {
-  return <div className="gridSidebarItem">{buttonText}</div>;
+function formatDate(date: Date) {
+    const jours = [
+        "1er", "2", "3", "4", "5", "6", "7", "8", "9", "10",
+        "11", "12", "13", "14", "15", "16", "17", "18", "19", "20",
+        "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"
+    ];
+    const mois = [
+        "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+        "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
+    ];
+
+    const jour = date.getDate();
+    const moisNom = mois[date.getMonth()];
+    const heures = date.getHours().toString().padStart(2, '0'); 
+    const minutes = date.getMinutes().toString().padStart(2, '0'); 
+
+    const jourFormat = jour === 1 ? "1er" : jours[jour - 1]; // Gérer "1er"
+    
+    return `${jourFormat} ${moisNom} ${heures}:${minutes}`;
+}
+
+export const SideBarBoard = ({ date, selected }: {date: Date, selected: boolean}) => {
+  return (
+  <div className={"gridSidebarItem"+ (selected ? " selected": "")}>
+    <p className="text-sm text-default-500">{formatDate(date)}</p>
+     <p className="text-sm flex flex-row gap-2">D : 1000€ <span className="text-green-400">G : 2000€</span> <MultiBox value={2} color="green"/>
+     </p>
+     </div>
+  );
 };
 
 export const VideoBanner = () => {
@@ -18,7 +45,6 @@ export const VideoBanner = () => {
       <video
         className="w-full h-auto"
         autoPlay
-        loop
         muted
         playsInline
       >
@@ -30,7 +56,7 @@ export const VideoBanner = () => {
   );
 };
 
-export const Indicator = ({title, value}) => {
+export const Indicator = ({title, value}: {title: string, value: string}) => {
     return(
         <div className="min-h-full flex flex-col justify-between">
             <p className="text-sm text-default-500">{title}</p>
@@ -169,7 +195,7 @@ export const BonusHunt = () => {
 export const HomePage = () => {
   return (
     <div>
-      <div className="h-[180px] overflow-hidden flex items-center rounded-xl mb-6">
+      <div className="w-[80%] m-auto h-[130px] overflow-hidden flex items-center rounded-xl mb-6">
         <VideoBanner />
       </div>
       <div className="maingrid">
@@ -180,8 +206,9 @@ export const HomePage = () => {
           <VideoBanner />
           <div className="flex flex-col h-full">
             <div>
-              <SideBarBoard buttonText={"HuntBoard"}></SideBarBoard>
-              <SideBarBoard buttonText={"HuntBoard2"}></SideBarBoard>
+              <SideBarBoard date={new Date()} selected={true}></SideBarBoard>
+              <SideBarBoard date={new Date()} selected={false}></SideBarBoard>
+              <SideBarBoard date={new Date()} selected={false}></SideBarBoard>
             </div>
             <Button className="mt-3" color="primary">
               Ajouter

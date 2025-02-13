@@ -44,7 +44,7 @@ export default function RootLayout({
         <Providers>
           <div className="relative flounex flex-col h-screen">
             <Navbar />
-            <main className="container mx-auto pt-6 px-6 flex-grow pb-20 h-full">
+            <main className="dark container mx-auto pt-6 px-6 flex-grow pb-20 h-full">
               {children}
             </main>
           </div>
