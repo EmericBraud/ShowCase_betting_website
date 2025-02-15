@@ -4,6 +4,7 @@ import { Button } from "@nextui-org/button";
 import { Divider } from "@nextui-org/react";
 import { Indicator, IndicatorBonusOpened, IndicatorGainLoose, IndicatorMulti } from "../Indicators";
 import { BonusList } from "./BonusList";
+import { useEffect, useState } from "react";
 
 
 export type HuntWithBonuses = Prisma.HuntGetPayload<{ include: { bonuses: true } }>;
@@ -14,6 +15,8 @@ export const BonusHunt = ({hunt}:{hunt: HuntWithBonuses;}) => {
   let start_bet = hunt.startingBet;
   let number_games = hunt.bonuses.length;
   let opened_games = hunt.bonuses.filter((bonus)=>bonus.opened).length;
+  const [isPublic, setIsPublic] = useState<boolean>(hunt.opened);
+  
   const terminateSession =  async() => {
     const response = await fetch("/api/hunt/close", {
       method: "POST",
@@ -25,12 +28,33 @@ export const BonusHunt = ({hunt}:{hunt: HuntWithBonuses;}) => {
       throw Error("Failed to terminate hunt");
     }
   };
+
+  useEffect(() => {
+    const updateHuntVisibility = async () => {
+      try {
+        const response = await fetch("/api/hunt/public", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ huntId: hunt.id, isPublic: isPublic }),
+        });
+  
+        if (!response.ok) {
+          throw new Error("Failed to update hunt visibility");
+        }
+      } catch (error) {
+        console.error("Error updating hunt visibility:", error);
+      }
+    };
+  
+    updateHuntVisibility();
+  }, [isPublic]);
+  
   return (
     <div>
       <div className="flex flex-row w-full gap-3 mb-2 justify-between">
         <div className="flex flex-row gap-3">
           <h1 className="font-bold text-lg p-0.5">Bonus hunt: {name}</h1>
-          <Switch defaultSelected={true} size="sm">
+          <Switch defaultSelected={hunt.isPublic} size="sm" isSelected={isPublic} onValueChange={setIsPublic}>
             Rendre public
           </Switch>
         </div>

@@ -12,13 +12,13 @@ export async function POST(req: NextRequest) {
 
   try {
     const data = await req.json();
-    if(data.startingBet == null){
-        return NextResponse.json({error: "Missing field: startingBet"}, {status: 406});
+    if(data.huntId == null || data.isPublic == null){
+        return NextResponse.json({error: "Missing field"}, {status: 406});
     }
-    const Hunt = await prisma.hunt.create({
+    const Hunt = await prisma.hunt.update({
+        where: {id: data.huntId},
         data: {
-            userId: session.user.id,
-            startingBet: data.startingBet
+            isPublic: data.isPublic
         }
     });
     return NextResponse.json({ success: true, Hunt });
@@ -33,24 +33,5 @@ export async function POST(req: NextRequest) {
 
 // Gestion de la méthode GET
 export async function GET(req: NextRequest) {
-  const session = await getServerSessionTool();
-
-  if (!session || !session.user || !session.user.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  try {
-    const hunts = await prisma.hunt.findMany({
-      where: { userId: session.user.id },
-      include: { bonuses: true },
-    });
-
-    return NextResponse.json(hunts);
-  } catch (error) {
-    console.error("Error fetching preferences:", error);
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
-    );
-  }
 }

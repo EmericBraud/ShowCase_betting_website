@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const data = await req.json();
-    if(!data.huntId){
+    if(data.huntId == null){
         return NextResponse.json({error: "Missing field: huntId"}, {status: 406});
     }
     const Hunt = await prisma.hunt.update({
