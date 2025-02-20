@@ -43,6 +43,7 @@ model User {
   updatedAt     DateTime        @updatedAt
   password      String?
   preferencesId Int?
+  isAdmin       Boolean         @default(false)
   accounts      Account[]
   sessions      Session[]
   hunts         Hunt[]

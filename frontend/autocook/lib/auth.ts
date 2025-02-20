@@ -24,22 +24,27 @@ export const authOptions: NextAuthOptions = {
         }
 
         const user = await prisma.user.findUnique({
-          where: {
-            email: credentials.email,
+          where: { email: credentials.email },
+          select: {
+            id: true,
+            email: true,
+            password: true, // Assure-toi de récupérer le mot de passe pour la comparaison
+            isAdmin: true, // Récupère aussi isAdmin
           },
         });
 
-
-        if (!user || !(await compare(credentials.password, user.password??""))) {
+        if (
+          !user ||
+          !(await compare(credentials.password, user.password ?? ""))
+        ) {
           return null;
         }
 
-
+        // Retourner isAdmin avec les autres informations de l'utilisateur
         return {
           id: user.id,
           email: user.email,
-          name: user.name,
-          randomKey: "Some random Key",
+          isAdmin: user.isAdmin, // Inclure isAdmin ici
         };
       },
     }),
@@ -51,27 +56,26 @@ export const authOptions: NextAuthOptions = {
         user: {
           ...session.user,
           id: token.id,
-          randomKey: token.randomKey,
+          isAdmin: token.isAdmin, // Inclure isAdmin ici
         },
       };
     },
     jwt: ({ token, user }) => {
       if (user) {
-        const u = user as unknown as any;
         return {
           ...token,
-          id: u.id,
-          randomKey: u.randomKey,
+          id: user.id,
+          isAdmin: user.isAdmin, // Inclure isAdmin ici
         };
       }
       return token;
     },
   },
   pages: {
-    signIn: '/auth/signin',
-    signOut: '/auth/signout',
-    error: '/auth/error', 
-    verifyRequest: '/auth/verify-request', // (used for check email message)
-    newUser: '/auth/signup'
-  }
+    signIn: "/auth/signin",
+    signOut: "/auth/signout",
+    error: "/auth/error",
+    verifyRequest: "/auth/verify-request", // (used for check email message)
+    newUser: "/auth/signup",
+  },
 };

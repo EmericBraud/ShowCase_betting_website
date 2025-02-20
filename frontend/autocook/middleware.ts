@@ -7,7 +7,12 @@ export default withAuth(
     const { pathname } = req.nextUrl;
 
     // Vérifie si l'utilisateur accède à une route protégée
-    if (pathname.startsWith("/") && !req.nextauth.token) {
+    if (pathname.startsWith("/admin")) {
+      // Vérifie si l'utilisateur est connecté et s'il a le rôle admin
+      if (!req.nextauth.token || !req.nextauth.token.isAdmin) {
+        return NextResponse.redirect(new URL("/auth/signin", req.url));
+      }
+    } else if (pathname.startsWith("/") && !req.nextauth.token) {
       return NextResponse.redirect(new URL("/auth/signin", req.url));
     }
 
@@ -23,6 +28,7 @@ export default withAuth(
 // Configurer les pages et répertoires protégés
 export const config = {
   matcher: [
-    "/cooker/:path*", // Protéger toutes les routes qui commencent par /cooker/
+    "/home/:path*",
+    "/admin/:path*", // Ajoute la route admin au matcher
   ],
 };
