@@ -1,37 +1,34 @@
-import prisma from "@/lib/prisma";
-import { getServerSessionTool } from "@/lib/apiTools";
-import { NextRequest, NextResponse } from "next/server";
+import prisma from '@/lib/prisma';
+import { getServerSessionTool } from '@/lib/apiTools';
+import { NextRequest, NextResponse } from 'next/server';
 
 // Gestion de la méthode POST
 export async function POST(req: NextRequest) {
-  const session = await getServerSessionTool();
+    const session = await getServerSessionTool();
 
-  if (!session || !session.user || !session.user.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  try {
-    const data = await req.json();
-    if(data.huntId == null || data.isPublic == null){
-        return NextResponse.json({error: "Missing field"}, {status: 406});
+    if (!session || !session.user || !session.user.id) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    const Hunt = await prisma.hunt.update({
-        where: {id: data.huntId},
-        data: {
-            isPublic: data.isPublic
+
+    try {
+        const data = await req.json();
+        if (data.huntId == null || data.isPublic == null) {
+            return NextResponse.json({ error: 'Missing field' }, { status: 406 });
         }
-    });
-    return NextResponse.json({ success: true, Hunt });
-  } catch (error) {
-    console.error("Error fetching preferences:", error);
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
-    );
-  }
+        const Hunt = await prisma.hunt.update({
+            where: { id: data.huntId },
+            data: {
+                isPublic: data.isPublic,
+            },
+        });
+        return NextResponse.json({ success: true, Hunt });
+    } catch (error) {
+        console.error('Error fetching preferences:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
 }
 
 // Gestion de la méthode GET
 export async function GET(req: NextRequest) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 }
