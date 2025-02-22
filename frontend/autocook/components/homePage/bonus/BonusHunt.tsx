@@ -1,19 +1,35 @@
+'use client';
 import { Prisma } from '@prisma/client';
 import { Switch } from '@nextui-org/switch';
 import { Button } from '@nextui-org/button';
-import { Divider } from '@nextui-org/react';
+import {
+    Divider,
+    Modal,
+    ModalContent,
+    ModalHeader,
+    ModalBody,
+    ModalFooter,
+    useDisclosure,
+    Checkbox,
+    Input,
+    Link,
+    Select,
+} from '@nextui-org/react';
 import { Indicator, IndicatorBonusOpened, IndicatorGainLoose, IndicatorMulti } from '../Indicators';
 import { BonusList } from './BonusList';
 import { useEffect, useState } from 'react';
+import GameSelector from '@/components/GameSelector';
+export type HuntFullType = Prisma.HuntGetPayload<{
+    include: { bonuses: { include: { game: { include: { image: true; casino: true } } } } };
+}>;
 
-export type HuntWithBonuses = Prisma.HuntGetPayload<{ include: { bonuses: true } }>;
-
-export const BonusHunt = ({ hunt }: { hunt: HuntWithBonuses }) => {
+export const BonusHunt = ({ hunt }: { hunt: HuntFullType }) => {
     let name: string = '#' + hunt.id;
     let start_bet = hunt.startingBet;
     let number_games = hunt.bonuses.length;
     let opened_games = hunt.bonuses.filter((bonus) => bonus.opened).length;
     const [isPublic, setIsPublic] = useState<boolean>(hunt.opened);
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     const terminateSession = async () => {
         const response = await fetch('/api/hunt/close', {
@@ -86,7 +102,7 @@ export const BonusHunt = ({ hunt }: { hunt: HuntWithBonuses }) => {
                     </div>
                     <div className="flex flex-row gap-2">
                         <Button color="default">Statistiques</Button>
-                        <Button color="primary">Ajouter des bonus</Button>
+                        <Button color="primary" onPress={onOpen}>Ajouter des bonus</Button>
                         <Button color="danger" onPress={terminateSession}>
                             Terminer la session
                         </Button>
@@ -96,7 +112,29 @@ export const BonusHunt = ({ hunt }: { hunt: HuntWithBonuses }) => {
             <br />
             <Divider />
             <div className="mt-2" />
-            <BonusList />
+            <BonusList bonusList={hunt.bonuses} />
+            <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader className="flex flex-col gap-1">
+                                Ajouter un bonus
+                            </ModalHeader>
+                            <ModalBody>
+                                <GameSelector/>
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button color="danger" variant="light" onPress={onClose}>
+                                    Fermer
+                                </Button>
+                                <Button color="primary" onPress={onClose}>
+                                    Valider
+                                </Button>
+                            </ModalFooter>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
         </div>
     );
 };

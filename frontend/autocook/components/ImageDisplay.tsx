@@ -29,8 +29,8 @@ export default function ImageDisplay({ imageData }: { imageData: Record<string, 
     }, [imageData]);
 
     return imageSrc ? <img src={imageSrc} style={{
-        width: "200px", // ou une valeur fixe
-        height: "200px", // Hauteur souhaitée
+        width: "150px", // ou une valeur fixe
+        height: "150px", // Hauteur souhaitée
         objectFit: "cover", // Coupe l’image tout en gardant les proportions
       }} className="rounded" alt="Game Image" /> : <p>Chargement...</p>;
 }

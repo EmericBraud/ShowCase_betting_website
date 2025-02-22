@@ -39,7 +39,16 @@ export async function GET(req: NextRequest) {
     try {
         const hunts = await prisma.hunt.findMany({
             where: { userId: session.user.id },
-            include: { bonuses: true },
+            include: { bonuses: {
+                include: {
+                    game: {
+                        include: {
+                            image: true,
+                            casino: true
+                        }
+                    }
+                }
+            } },
         });
 
         return NextResponse.json(hunts);

@@ -27,7 +27,6 @@ export async function POST(req: NextRequest) {
     }
 }
 
-// Gestion de la méthode GET
 export async function GET(req: NextRequest) {
     const session = await getServerSessionTool();
 

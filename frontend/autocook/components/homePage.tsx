@@ -7,13 +7,13 @@ import { useEffect, useState } from 'react';
 import { SideBarBoard } from './homePage/sideBar/SideBarBoard';
 import { VideoBanner } from './homePage/VideoBanner';
 import { BonusHunt } from './homePage/bonus/BonusHunt';
-import type { HuntWithBonuses } from './homePage/bonus/BonusHunt';
+import type { HuntFullType } from './homePage/bonus/BonusHunt';
 
 export const HomePage = () => {
-    const [hunts, setHunts] = useState<HuntWithBonuses[]>([]);
+    const [hunts, setHunts] = useState<HuntFullType[]>([]);
     const [startingBet, setStartingBet] = useState<number>(0);
     const [isOpen, setIsOpen] = useState(false);
-    const [selectedHunt, setSelectedHunt] = useState<HuntWithBonuses | null>(null);
+    const [selectedHunt, setSelectedHunt] = useState<HuntFullType | null>(null);
 
     useEffect(() => {
         fetchHunts();
@@ -24,7 +24,7 @@ export const HomePage = () => {
         const data = await response.json();
 
         if (response.ok && data) {
-            setHunts(data as HuntWithBonuses[]);
+            setHunts(data as HuntFullType[]);
             if (!selectedHunt && data.length > 0) {
                 setSelectedHunt(data[0]);
             }
